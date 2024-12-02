@@ -1,0 +1,6 @@
+========================================================================
+pubkey: 9gSXFtVtg9k5KzyNyrTA9EqHYuywXJpRrpuCEpLdu3dd
+========================================================================
+Save this seed phrase and your BIP39 passphrase to recover your new keypair:
+board flame lemon drop empty illegal veteran crash duty twenty park diet
+========================================================================
