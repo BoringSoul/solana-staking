@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;  // 导入Anchor框架的预导入模块
-use super::{  // 引入当前模块中定义的其他结构体
+use crate::base::{  // 引入当前模块中定义的其他结构体
    StakingInstance,
    User,
 };
@@ -19,7 +19,7 @@ pub struct InitializeUser<'info> {
            staking_instance.key().as_ref(),  // 质押实例的公钥
            authority.key().as_ref()  // 签名者的公钥
        ],
-       bump = _staking_user_bump,  // 生成用户实例账户地址的bump值
+       bump,  // 生成用户实例账户地址的bump值
        payer = authority,  // 为创建该账户支付费用的账户
    )]
    pub user_instance: Box<Account<'info, User>>,  // 用户实例账户，存储用户的质押信息

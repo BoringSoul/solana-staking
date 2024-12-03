@@ -1,10 +1,12 @@
 use anchor_lang::prelude::*; // 导入Anchor框架的预导入模块
-use anchor_spl::token::TokenAccount; // 导入TokenAccount类型
-use super::{ // 引入当前模块中定义的其他结构体
+use anchor_spl::token::{
+    TokenAccount,
+    Mint
+}; // 导入TokenAccount类型
+use crate::base::{ // 引入当前模块中定义的其他结构体
    StakingInstance,
    User,
 };
-use anchor_spl::token::Mint; // 导入Mint类型
 
 #[derive(Accounts)]
 #[instruction(

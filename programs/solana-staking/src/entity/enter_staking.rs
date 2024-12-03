@@ -1,9 +1,12 @@
 use anchor_lang::prelude::*; // 导入 Anchor 框架的预导入模块
-use anchor_spl::token::TokenAccount; // 导入 TokenAccount 类型，用于表示 SPL 代币账户
-use super::StakingInstance; // 引入 StakingInstance 结构体
-use super::User; // 引入 User 结构体
-use anchor_spl::token::Mint; // 导入 Mint 类型，用于表示 SPL 代币的铸造账户
-use std::ops::Deref; // 导入 Deref trait，用于解引用
+use anchor_spl::token::{
+    TokenAccount,
+    Mint,
+}; // 导入 TokenAccount 类型，用于表示 SPL 代币账户
+use crate::base::{ // 引入当前模块中定义的其他结构体
+    StakingInstance,
+    User,
+ };// 引入 User 结构体
 
 #[derive(Accounts)]
 #[instruction(
@@ -47,13 +50,13 @@ pub struct EnterStaking<'info> {
    )]
    pub nft_token_program_wallet: Box<Account<'info, TokenAccount>>, // 存储NFT代币的程序钱包
    #[account(
-       mut, 
+       mut,
        seeds = [crate::STAKING_SEED.as_ref(),staking_instance.authority.as_ref()],
        bump = _staking_instance_bump, // 生成质押实例账户地址的bump值
    )]
    pub staking_instance: Account<'info, StakingInstance>, // 质押实例账户，包含质押相关的全局信息
    #[account(
-       mut, 
+       mut,
        seeds = [
            crate::USER_SEED.as_ref(), // 用户种子
            staking_instance.key().as_ref(), // 质押实例的公钥
