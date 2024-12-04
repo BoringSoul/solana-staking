@@ -21,6 +21,7 @@ pub struct InitializeUser<'info> {
        ],
        bump,  // 生成用户实例账户地址的bump值
        payer = authority,  // 为创建该账户支付费用的账户
+       space = 8 * 100
    )]
    pub user_instance: Box<Account<'info, User>>,  // 用户实例账户，存储用户的质押信息
    #[account(

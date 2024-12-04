@@ -32,20 +32,20 @@ pub struct CancelStaking<'info> {
    #[account(
        mut, // 表示该账户可能被修改
        constraint = nft_token_authority_wallet
-        .clone().into_inner().deref().owner == authority.key(),
+        .clone().into_inner().owner == authority.key(),
        // 确保NFT代币的持有者是操作的签名者
        constraint = nft_token_authority_wallet
-       .clone().into_inner().deref().mint == nft_token_mint.key()
+       .clone().into_inner().mint == nft_token_mint.key()
        // 确保钱包中的代币是指定的NFT代币
    )]
    pub nft_token_authority_wallet: Box<Account<'info, TokenAccount>>, // NFT代币持有者的钱包账户
    #[account(
        mut, // 表示该账户可能被修改
        constraint = nft_token_program_wallet
-       .clone().into_inner().deref().owner == staking_instance.key(),
+       .clone().into_inner().owner == staking_instance.key(),
        // 确保NFT代币的程序钱包所有者是质押实例
        constraint = nft_token_program_wallet
-       .clone().into_inner().deref().mint == nft_token_mint.key()
+       .clone().into_inner().mint == nft_token_mint.key()
        // 确保程序钱包中的代币是指定的NFT代币
    )]
    pub nft_token_program_wallet: Box<Account<'info, TokenAccount>>, // 存储NFT代币的程序钱包
@@ -56,7 +56,7 @@ pub struct CancelStaking<'info> {
    )]
    pub staking_instance: Account<'info, StakingInstance>, // 质押实例账户，包含质押相关的全局信息
    #[account(
-       mut, 
+       mut,
        seeds = [
            crate::USER_SEED.as_ref(), // 用户种子
            staking_instance.key().as_ref(), // 质押实例的公钥
@@ -72,14 +72,14 @@ pub struct CancelStaking<'info> {
    )]
    pub allowed_collection_address: AccountInfo<'info>, // 允许的NFT集合的账户地址
    #[account(
-       constraint = 
+       constraint =
            token_program.key() == crate::TOKEN_PROGRAM_BYTES.parse::<Pubkey>().unwrap(),
        // 确保指定的程序是Token程序
    )]
    pub token_program: AccountInfo<'info>, // Token程序的账户信息
    #[account(
-       constraint = 
-           nft_program_id.key() == 
+       constraint =
+           nft_program_id.key() ==
            crate::NFT_TOKEN_PROGRAM_BYTES.parse::<Pubkey>().unwrap(),
        // 确保指定的程序是NFT程序
    )]

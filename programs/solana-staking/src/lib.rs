@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-
+use entity::*;
 pub mod base;
 pub mod entity;
 
@@ -11,7 +11,7 @@ pub mod solana_staking {
 
     // 初始化质押
     pub fn initialize_staking(
-    ctx: Context<entity::InitializeStaking>,  // 初始化质押上下文
+    ctx: Context<InitializeStaking>,  // 初始化质押上下文
     token_per_sec: u64,  // 每秒奖励的代币数量
     ) -> ProgramResult {
         let staking_instance = &mut ctx.accounts.staking_instance;  // 获取质押实例
@@ -35,7 +35,7 @@ pub mod solana_staking {
 
     // 初始化用户
     pub fn initialize_user(
-        ctx: Context<entity::InitializeUser>,  // 初始化用户上下文
+        ctx: Context<InitializeUser>,  // 初始化用户上下文
     ) -> ProgramResult {
         let user_instance = &mut ctx.accounts.user_instance;  // 获取用户实例
         user_instance.deposited_amount = 0;  // 初始化存入数量
@@ -46,7 +46,7 @@ pub mod solana_staking {
 
     // 进入质押
     pub fn enter_staking(
-        ctx: Context<entity::EnterStaking>,  // 进入质押上下文
+        ctx: Context<EnterStaking>,  // 进入质押上下文
     ) -> ProgramResult {
         let data = &mut ctx.accounts.nft_token_metadata.try_borrow_data()?;  // 获取NFT元数据
         let val = mpl_token_metadata::state::Metadata::deserialize(&mut &data[..])?;  // 反序列化元数据
@@ -103,7 +103,7 @@ pub mod solana_staking {
 
     // 取消质押
     pub fn cancel_staking(
-        ctx: Context<entity::CancelStaking>,  // 取消质押上下文
+        ctx: Context<CancelStaking>,  // 取消质押上下文
         staking_instance_bump: u8,  // 质押实例的 bump
     ) -> ProgramResult {
         let data = &mut ctx.accounts.nft_token_metadata.try_borrow_data()?;  // 获取NFT元数据
@@ -173,7 +173,7 @@ pub mod solana_staking {
 
     // 领取奖励
     pub fn claim_rewards(
-        ctx: Context<entity::ClaimRewards>,  // 领取奖励上下文
+        ctx: Context<ClaimRewards>,  // 领取奖励上下文
         amount: u64,  // 领取的奖励数量
         staking_instance_bump: u8,  // 质押实例的 bump
     ) -> ProgramResult {

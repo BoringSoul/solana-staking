@@ -25,6 +25,7 @@ pub struct InitializeStaking<'info> {
        bump,  // 指定bump参数，用于创建PDA
        //space = 8 + core::mem::size_of::<StakingInstance>(),  // 为staking_instance账户分配空间（此行被注释掉）
        payer = authority,  // 声明authority账户为支付者
+       space = 8 * 100
    )]
    pub staking_instance: Account<'info, StakingInstance>,  // 声明staking_instance账户类型为Account<'info, StakingInstance>
    pub allowed_collection_address: AccountInfo<'info>,  // 声明allowed_collection_address账户类型为AccountInfo<'info>
