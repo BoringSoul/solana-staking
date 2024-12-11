@@ -1,12 +1,11 @@
-use anchor_lang::prelude::*; // 导入Anchor框架的预导入模块
+use anchor_lang::{prelude::*, solana_program::entrypoint::ProgramResult}; // 导入Anchor框架的预导入模块
 use anchor_spl::token::{
-    TokenAccount,
-    Mint
+    self, Mint, MintTo, TokenAccount
 }; // 导入TokenAccount类型
-use crate::base::{ // 引入当前模块中定义的其他结构体
-   StakingInstance,
-   User,
-};
+use crate::stake::StakingContext;
+use crate::user::UserContext;
+
+use super::{pending, pool, debt};
 
 #[derive(Accounts)]
 #[instruction(
@@ -33,7 +32,7 @@ pub struct ClaimRewards<'info> {
        seeds = [crate::STAKING_SEED.as_ref(), staking_instance.authority.as_ref()], // 用于生成质押实例账户地址的种子
        bump = staking_instance_bump, // 生成质押实例账户地址的bump值
    )]
-   pub staking_instance: Box<Account<'info, StakingInstance>>, // 质押实例账户，存储质押相关的全局信息
+   pub staking_instance: Box<Account<'info, StakingContext>>, // 质押实例账户，存储质押相关的全局信息
    #[account(
        mut, // 表示该账户可能被修改
        seeds = [
@@ -43,7 +42,7 @@ pub struct ClaimRewards<'info> {
        ],
        bump = _staking_user_bump, // 生成用户实例账户地址的bump值
    )]
-   pub user_instance: Box<Account<'info, User>>, // 用户实例账户，存储用户的质押信息
+   pub user_instance: Box<Account<'info, UserContext>>, // 用户实例账户，存储用户的质押信息
    #[account(
        constraint = token_program.key() == crate::TOKEN_PROGRAM_BYTES.parse::<Pubkey>().unwrap(), // 确保指定的程序是Token程序
    )]
@@ -51,4 +50,54 @@ pub struct ClaimRewards<'info> {
    pub system_program: Program<'info, System>, // Solana系统程序，用于系统级操作如账户创建
    pub rent: AccountInfo<'info>, // 租金账户信息，用于账户的租金计算
    pub time: Sysvar<'info, Clock>, // 时钟系统变量，用于获取当前时间
+}
+
+// 领取奖励
+pub fn claim_rewards(
+    ctx: Context<ClaimRewards>,  // 领取奖励上下文
+    amount: u64,  // 领取的奖励数量
+    staking_instance_bump: u8,  // 质押实例的 bump
+) -> ProgramResult {
+    let staking_instance = &mut ctx.accounts.staking_instance;  // 获取质押实例
+    let user_instance = &mut ctx.accounts.user_instance;  // 获取用户实例
+    let current_timestamp = ctx.accounts.time.unix_timestamp as u64;  // 获取当前时间戳
+    pool::update_reward_pool(
+        current_timestamp,
+        staking_instance,
+        user_instance,
+    );
+    pending::store_pending_reward(
+        staking_instance,
+        user_instance,
+    );
+
+    // 执行代币铸造
+    let cpi_accounts = MintTo {
+        mint: ctx.accounts.reward_token_mint.to_account_info(),
+        to: ctx.accounts.reward_token_authority_wallet.to_account_info(),
+        authority: staking_instance.to_account_info(),
+    };
+    let cpi_program = ctx.accounts.token_program.clone();
+    let context = CpiContext::new(cpi_program, cpi_accounts);
+    let authority_seeds = &[&STAKING_SEED[..],
+    staking_instance.authority.as_ref(),
+    &[staking_instance_bump]
+    ];
+
+    let amount = if amount == 0 {
+        user_instance.accumulated_reward
+    } else {
+        amount
+    };
+    user_instance.accumulated_reward = user_instance
+        .accumulated_reward
+        .checked_sub(amount)
+        .unwrap();
+
+    token::mint_to(context.with_signer(&[&authority_seeds[..]]), amount)?;
+    debt::update_reward_debt(
+        staking_instance,
+        user_instance,
+    );
+    Ok(())
 }
