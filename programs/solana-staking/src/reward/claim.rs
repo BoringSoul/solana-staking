@@ -29,14 +29,14 @@ pub struct ClaimRewards<'info> {
    pub reward_token_authority_wallet: Box<Account<'info, TokenAccount>>, // 奖励代币接收者的钱包账户
    #[account(
        mut, // 表示该账户可能被修改
-       seeds = [crate::STAKING_SEED.as_ref(), staking_instance.authority.as_ref()], // 用于生成质押实例账户地址的种子
+       seeds = [crate::constants::STAKING_SEED.as_ref(), staking_instance.authority.as_ref()], // 用于生成质押实例账户地址的种子
        bump = staking_instance_bump, // 生成质押实例账户地址的bump值
    )]
    pub staking_instance: Box<Account<'info, StakingContext>>, // 质押实例账户，存储质押相关的全局信息
    #[account(
        mut, // 表示该账户可能被修改
        seeds = [
-           crate::USER_SEED.as_ref(), // 用户种子
+           crate::constants::USER_SEED.as_ref(), // 用户种子
            staking_instance.key().as_ref(), // 质押实例的公钥
            authority.key().as_ref() // 签名者的公钥
        ],
@@ -79,7 +79,7 @@ pub fn claim_rewards(
     };
     let cpi_program = ctx.accounts.token_program.clone();
     let context = CpiContext::new(cpi_program, cpi_accounts);
-    let authority_seeds = &[&STAKING_SEED[..],
+    let authority_seeds = &[&crate::constants::STAKING_SEED[..],
     staking_instance.authority.as_ref(),
     &[staking_instance_bump]
     ];

@@ -4,6 +4,7 @@ use stake::*;
 use user::*;
 use reward::*;
 
+pub mod constants;
 pub mod stake;
 pub mod user;
 pub mod reward;

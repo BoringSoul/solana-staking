@@ -49,14 +49,14 @@ pub struct EnterStaking<'info> {
    pub nft_token_program_wallet: Box<Account<'info, TokenAccount>>, // 存储NFT代币的程序钱包
    #[account(
        mut,
-       seeds = [crate::STAKING_SEED.as_ref(),staking_instance.authority.as_ref()],
+       seeds = [crate::constants::STAKING_SEED.as_ref(),staking_instance.authority.as_ref()],
        bump = _staking_instance_bump, // 生成质押实例账户地址的bump值
    )]
    pub staking_instance: Account<'info, StakingContext>, // 质押实例账户，包含质押相关的全局信息
    #[account(
        mut,
        seeds = [
-           crate::USER_SEED.as_ref(), // 用户种子
+           crate::constants::USER_SEED.as_ref(), // 用户种子
            staking_instance.key().as_ref(), // 质押实例的公钥
            authority.key().as_ref() // 签名者的公钥
        ],
@@ -112,7 +112,7 @@ pub fn enter_staking(
     let current_timestamp = ctx.accounts.time.unix_timestamp as u64;  // 获取当前时间戳
     
     // 更新奖励池
-    crate::reward::pool::update(
+    crate::reward::pool::update_reward_pool(
         current_timestamp,
         staking_instance,
         user_instance,
