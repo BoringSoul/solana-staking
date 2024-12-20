@@ -10,6 +10,6 @@ pub fn update_reward_debt(
     user_instance.reward_debt = user_instance.deposited_amount
         .checked_mul(staking_instance.accumulated_reward_per_share)
         .unwrap()
-        .checked_div(COMPUTATION_DECIMALS)
+        .checked_div(crate::constants::COMPUTATION_DECIMALS)
         .unwrap();
 }

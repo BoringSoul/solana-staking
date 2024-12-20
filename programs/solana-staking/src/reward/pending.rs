@@ -11,7 +11,7 @@ pub fn store_pending_reward(
         .checked_add(user_instance.deposited_amount
         .checked_mul(staking_instance.accumulated_reward_per_share)
         .unwrap()
-        .checked_div(COMPUTATION_DECIMALS)
+        .checked_div(crate::constants::COMPUTATION_DECIMALS)
         .unwrap()
         .checked_sub(user_instance.reward_debt)
         .unwrap())

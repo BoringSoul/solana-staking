@@ -17,7 +17,7 @@ pub fn update_reward_pool(
     // 更新每股的累计奖励
     staking_instance.accumulated_reward_per_share =
         staking_instance.accumulated_reward_per_share
-        .checked_add(income.checked_mul(COMPUTATION_DECIMALS).unwrap()
+        .checked_add(income.checked_mul(crate::constants::COMPUTATION_DECIMALS).unwrap()
         .checked_div(staking_instance.total_shares)
         .unwrap_or(0))
         .unwrap();

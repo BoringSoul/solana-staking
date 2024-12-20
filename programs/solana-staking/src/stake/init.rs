@@ -22,7 +22,7 @@ pub struct InitializeStaking<'info> {
    pub reward_token_mint: Box<Account<'info, Mint>>,  // 声明reward_token_mint账户类型为Box<Account<'info, Mint>>
    #[account(  // 声明staking_instance账户的初始化及约束条件
        init,  // 声明staking_instance账户需要初始化
-       seeds = [crate::STAKING_SEED.as_ref(), authority.key().as_ref()],  // 指定seeds参数，用于创建PDA（Program Derived Address）
+       seeds = [crate::constants::STAKING_SEED.as_ref(), authority.key().as_ref()],  // 指定seeds参数，用于创建PDA（Program Derived Address）
        bump,  // 指定bump参数，用于创建PDA
        //space = 8 + core::mem::size_of::<StakingContext>(),  // 为staking_instance账户分配空间（此行被注释掉）
        payer = authority,  // 声明authority账户为支付者
