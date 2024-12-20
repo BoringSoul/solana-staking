@@ -5,6 +5,7 @@ use anchor_spl::token::{
 }; // 导入 TokenAccount 类型，用于表示 SPL 代币账户
 use crate::stake::context::StakingContext;
 use crate::user::context::UserContext;
+use mpl_token_metadata::state::Metadata;
 
 #[derive(Accounts)]
 #[instruction(
